@@ -7,9 +7,8 @@
     "strictPropertyInitialization": false,
     "allowJs": true,
     "esModuleInterop": true,
-
+    "baseUrl": "./",
     "emitDecoratorMetadata": true,
-
     "experimentalDecorators": true
   }
 }

@@ -8,27 +8,45 @@ generator client {
 }
 
 model Person {
-  id              Int      @id @default(autoincrement()) // ID auto incrementado
-  name            String   // Nome completo
-  email           String   @unique // Email único
-  confirmEmail    String   // Confirmação do email
-  phone           String?  // Telefone fixo (opcional)
-  mobile          String   // Celular (obrigatório)
-  termsAccepted   Boolean  // Flag de aceitação dos termos
-  createdAt       DateTime @default(now()) // Data de criação
-  updatedAt       DateTime @updatedAt      // Data de última atualização
-  address         Address? // Relacionamento com Address
+  id            Int        @id @default(autoincrement())
+  name          String
+  email         String
+  confirmEmail  String
+  phone         String?
+  mobile        String?
+  termsAccepted Boolean
+  isActive      Boolean    @default(true)
+  addressId     Int?
+  individual    Individual?
+  company       Company?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model Individual {
+  id         Int      @id @default(autoincrement())
+  cpf        String   @unique
+  birthDate  DateTime
+  personId   Int      @unique
+  person     Person   @relation(fields: [personId], references: [id])
+}
+
+model Company {
+  id         Int      @id @default(autoincrement())
+  cnpj       String   @unique
+  tradeName  String
+  personId   Int      @unique
+  person     Person   @relation(fields: [personId], references: [id])
 }
 
 model Address {
-  id            Int      @id @default(autoincrement()) // ID auto incrementado
-  street        String   // Rua
-  number        String   // Número
-  complement    String?  // Complemento (opcional)
-  neighborhood  String   // Bairro
-  city          String   // Cidade
-  state         String   // Estado
-  zipCode       String   // CEP
-  personId      Int      @unique // ID da pessoa (1:1)
-  person        Person   @relation(fields: [personId], references: [id]) // Relacionamento com Person
+  id         Int      @id @default(autoincrement())
+  street     String
+  number     String
+  complement String?
+  district   String
+  city       String
+  state      String
+  zipCode    String
+  isActive   Boolean  @default(true)
 }

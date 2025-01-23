@@ -1,0 +1,34 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL") // A URL de conexão está configurada no arquivo .env
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Person {
+  id              Int      @id @default(autoincrement()) // ID auto incrementado
+  name            String   // Nome completo
+  email           String   @unique // Email único
+  confirmEmail    String   // Confirmação do email
+  phone           String?  // Telefone fixo (opcional)
+  mobile          String   // Celular (obrigatório)
+  termsAccepted   Boolean  // Flag de aceitação dos termos
+  createdAt       DateTime @default(now()) // Data de criação
+  updatedAt       DateTime @updatedAt      // Data de última atualização
+  address         Address? // Relacionamento com Address
+}
+
+model Address {
+  id            Int      @id @default(autoincrement()) // ID auto incrementado
+  street        String   // Rua
+  number        String   // Número
+  complement    String?  // Complemento (opcional)
+  neighborhood  String   // Bairro
+  city          String   // Cidade
+  state         String   // Estado
+  zipCode       String   // CEP
+  personId      Int      @unique // ID da pessoa (1:1)
+  person        Person   @relation(fields: [personId], references: [id]) // Relacionamento com Person
+}

@@ -1,6 +1,6 @@
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL") // A URL de conexão está configurada no arquivo .env
+  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -8,45 +8,52 @@ generator client {
 }
 
 model Person {
-  id            Int        @id @default(autoincrement())
-  name          String
-  email         String
-  confirmEmail  String
-  phone         String?
-  mobile        String?
-  termsAccepted Boolean
-  isActive      Boolean    @default(true)
-  addressId     Int?
-  individual    Individual?
-  company       Company?
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  id             Int      @id @default(autoincrement())
+  name           String
+  email          String   @unique
+  confirmEmail   String
+  phone          String?
+  mobile         String?
+  termsAccepted  Boolean
+  type           String
+  isActive       Boolean  @default(true)
+  addresses      Address[]
+  individuals    Individual[]
+  companies      Company[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model Individual {
-  id         Int      @id @default(autoincrement())
-  cpf        String   @unique
-  birthDate  DateTime
-  personId   Int      @unique
-  person     Person   @relation(fields: [personId], references: [id])
+  id        Int      @id @default(autoincrement())
+  cpf       String   @unique
+  personId  Int      @unique
+  person    Person   @relation(fields: [personId], references: [id])
 }
 
 model Company {
-  id         Int      @id @default(autoincrement())
-  cnpj       String   @unique
-  tradeName  String
-  personId   Int      @unique
-  person     Person   @relation(fields: [personId], references: [id])
+  id             Int      @id @default(autoincrement())
+  cnpj           String   @unique
+  responsibleCpf String
+  personId       Int      @unique
+  person         Person   @relation(fields: [personId], references: [id])
 }
 
 model Address {
-  id         Int      @id @default(autoincrement())
-  street     String
-  number     String
-  complement String?
-  district   String
-  city       String
-  state      String
-  zipCode    String
-  isActive   Boolean  @default(true)
+  id          Int      @id @default(autoincrement())
+  street      String
+  number      String
+  complement  String?
+  neighborhood String
+  city        String
+  state       String
+  postalCode  String
+  isActive    Boolean  @default(true)
+  personId    Int
+  person      Person   @relation(fields: [personId], references: [id])
+}
+
+enum PersonType {
+  INDIVIDUAL
+  COMPANY
 }

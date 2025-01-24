@@ -1,20 +1,72 @@
 import prisma from '../models/cadastro.model';
+import { Prisma } from '@prisma/client';
 
-export const createAddressService = async (addressData: any) => {
+export const createPersonService = async (data: { name: string, email: string, confirmEmail: string, phone?: string, mobile?: string, termsAccepted: boolean, type: string }) => {
   try {
-    const address = await prisma.address.create({ data: addressData });
-    return address;
+    return await prisma.person.create({
+      data
+    });
   } catch (error) {
-    throw new Error('Failed to create address');
+    console.error('Error in createPersonService:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaError = error as Prisma.PrismaClientKnownRequestError;
+      throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
+    }
+    throw error;
   }
 };
 
-export const createPersonService = async (personData: any) => {
+export const createIndividualService = async (personId: number, data: { cpf: string }) => {
   try {
-    const person = await prisma.person.create({ data: personData });
-    return person;
+    return await prisma.individual.create({
+      data: {
+        ...data,
+        personId: personId
+      }
+    });
   } catch (error) {
-    throw new Error('Failed to create person');
+    console.error('Error in createIndividualService:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaError = error as Prisma.PrismaClientKnownRequestError;
+      throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
+    }
+    throw error;
+  }
+};
+
+export const createCompanyService = async (personId: number, data: { cnpj: string, responsibleCpf: string }) => {
+  try {
+    return await prisma.company.create({
+      data: {
+        ...data,
+        personId: personId
+      }
+    });
+  } catch (error) {
+    console.error('Error in createCompanyService:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaError = error as Prisma.PrismaClientKnownRequestError;
+      throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
+    }
+    throw error;
+  }
+};
+
+export const createAddressService = async (personId: number, data: { street: string, number: string, complement?: string, neighborhood: string, city: string, state: string, postalCode: string }) => {
+  try {
+    return await prisma.address.create({
+      data: {
+        ...data,
+        personId: personId
+      }
+    });
+  } catch (error) {
+    console.error('Error in createAddressService:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaError = error as Prisma.PrismaClientKnownRequestError;
+      throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
+    }
+    throw error;
   }
 };
 
@@ -23,6 +75,11 @@ export const getAllAddressesService = async () => {
     const addresses = await prisma.address.findMany();
     return addresses;
   } catch (error) {
+    console.error('Error in getAllAddressesService:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaError = error as Prisma.PrismaClientKnownRequestError;
+      throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
+    }
     throw new Error('Failed to fetch addresses');
   }
 };
@@ -35,6 +92,11 @@ export const deactivateAddressService = async (id: number) => {
     });
     return address;
   } catch (error) {
+    console.error('Error in deactivateAddressService:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaError = error as Prisma.PrismaClientKnownRequestError;
+      throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
+    }
     throw new Error('Failed to deactivate address');
   }
 };
@@ -44,6 +106,11 @@ export const getAllPersonsService = async () => {
     const persons = await prisma.person.findMany();
     return persons;
   } catch (error) {
+    console.error('Error in getAllPersonsService:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaError = error as Prisma.PrismaClientKnownRequestError;
+      throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
+    }
     throw new Error('Failed to fetch persons');
   }
 };
@@ -56,6 +123,11 @@ export const deactivatePersonService = async (id: number) => {
     });
     return person;
   } catch (error) {
+    console.error('Error in deactivatePersonService:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaError = error as Prisma.PrismaClientKnownRequestError;
+      throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
+    }
     throw new Error('Failed to deactivate person');
   }
 };

@@ -12,10 +12,10 @@ export const getAllAddresses = async () => {
   return await prisma.address.findMany();
 };
 
-export const deactivateAddress = async (id: number) => {
+export const deactivateAddress = async (id: string) => {
   return await prisma.address.update({
-    where: { id },
-    data: { active: false },
+    where: { id: Number(id) },
+    data: { isActive: false },
   });
 };
 
@@ -23,9 +23,9 @@ export const getAllPersons = async () => {
   return await prisma.person.findMany();
 };
 
-export const deactivatePerson = async (id: number) => {
+export const deactivatePerson = async (id: string) => {
   return await prisma.person.update({
-    where: { id },
-    data: { active: false },
+    where: { id: Number(id) } ,
+    data: { isActive: false },
   });
 };

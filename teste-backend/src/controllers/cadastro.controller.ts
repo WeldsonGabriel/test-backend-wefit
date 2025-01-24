@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import {
   createAddressService,
   createPersonService,
+  createIndividualService,
+  createCompanyService,
   getAllAddressesService,
   deactivateAddressService,
   getAllPersonsService,
@@ -10,31 +12,33 @@ import {
 
 export const createCadastro = async (req: Request, res: Response) => {
   try {
-    const addressData = req.body.address;
-    const personData = req.body.person;
+    const { name, email, confirmEmail, phone, mobile, termsAccepted, type, address, cpf, cnpj, responsibleCpf } = req.body;
 
-    // Validate address data
-    if (!addressData) {
-      return res.status(400).json({ message: 'Address data is required' });
+    if (!name || !email || !confirmEmail || !termsAccepted || !type) {
+      return res.status(400).json({ message: 'Name, email, confirmEmail, terms acceptance, and type are required' });
     }
 
-    // Create address first
-    const address = await createAddressService(addressData);
-
-    // Validate person data
-    if (!personData) {
-      return res.status(400).json({ message: 'Person data is required' });
+    if (email !== confirmEmail) {
+      return res.status(400).json({ message: 'Email and confirmEmail do not match' });
     }
 
-    // Add address ID to person data
-    personData.addressId = address.id;
+    const newPerson = await createPersonService({ name, email, confirmEmail, phone, mobile, termsAccepted, type }) as unknown as { id: number };
 
-    // Create person
-    const person = await createPersonService(personData);
+    if (address) {
+      await createAddressService(newPerson.id, address);
+    }
 
-    res.status(201).json({ address, person });
+    if (type === 'INDIVIDUAL' && cpf) {
+      await createIndividualService(newPerson.id, { cpf });
+    } else if (type === 'COMPANY' && cnpj && responsibleCpf) {
+      await createCompanyService(newPerson.id, { cnpj, responsibleCpf });
+    } else {
+      return res.status(400).json({ message: 'Invalid data for the specified type' });
+    }
+
+    return res.status(201).json(newPerson);
   } catch (error) {
-    res.status(500).json({ message: 'Internal server error', error });
+    return res.status(500).json({ message: 'Internal server error', error });
   }
 };
 

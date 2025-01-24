@@ -1,16 +1,16 @@
 import express from "express";
-import cadastro from "./routes/cadastro.routes";
+import cadastroRoutes from "./routes/cadastro.routes";
 import errorHandler from "./middlewares/errorHandler";
 import validateRequest from "./middlewares/validateRequest";
 
 const app = express();
 
-// Middlewares
+// Middlewares globais
 app.use(express.json());
 app.use(validateRequest);
 
-// Rotas
-app.use(cadastro);
+// Rotas principais
+app.use("/api/cadastro", cadastroRoutes);
 
 // Middleware de tratamento de erros
 app.use(errorHandler);

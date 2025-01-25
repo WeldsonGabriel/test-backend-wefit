@@ -83,9 +83,11 @@ export const createAddressService = async (personId: number, data: { street: str
   }
 };
 
-export const getAllAddressesService = async () => {
+export const getAllAddressesService = async (isActive: boolean = true) => {
   try {
-    const addresses = await prisma.address.findMany();
+    const addresses = await prisma.address.findMany({
+      where: { isActive }
+    });
     return addresses;
   } catch (error) {
     console.error('Error in getAllAddressesService:', error);
@@ -94,6 +96,22 @@ export const getAllAddressesService = async () => {
       throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
     }
     throw new Error('Failed to fetch addresses');
+  }
+};
+
+export const getAddressByIdService = async (id: number, isActive: boolean = true) => {
+  try {
+    const address = await prisma.address.findUnique({
+      where: { id, isActive }
+    });
+    return address;
+  } catch (error) {
+    console.error('Error in getAddressByIdService:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaError = error as Prisma.PrismaClientKnownRequestError;
+      throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
+    }
+    throw new Error('Failed to fetch address');
   }
 };
 
@@ -114,9 +132,11 @@ export const deactivateAddressService = async (id: number) => {
   }
 };
 
-export const getAllPersonsService = async () => {
+export const getAllPersonsService = async (isActive: boolean = true) => {
   try {
-    const persons = await prisma.person.findMany();
+    const persons = await prisma.person.findMany({
+      where: { isActive }
+    });
     return persons;
   } catch (error) {
     console.error('Error in getAllPersonsService:', error);
@@ -142,5 +162,21 @@ export const deactivatePersonService = async (id: number) => {
       throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
     }
     throw new Error('Failed to deactivate person');
+  }
+};
+
+export const getPersonByIdService = async (id: number, isActive: boolean = true) => {
+  try {
+    const person = await prisma.person.findUnique({
+      where: { id, isActive }
+    });
+    return person;
+  } catch (error) {
+    console.error('Error in getPersonByIdService:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaError = error as Prisma.PrismaClientKnownRequestError;
+      throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
+    }
+    throw new Error('Failed to fetch person');
   }
 };

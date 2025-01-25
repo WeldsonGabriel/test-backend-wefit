@@ -8,6 +8,8 @@ import {
   deactivateAddressService,
   getAllPersonsService,
   deactivatePersonService,
+  getPersonByIdService,
+  getAddressByIdService
 } from '../services/cadastro.service';
 
 export const createCadastro = async (req: Request, res: Response) => {
@@ -89,3 +91,32 @@ export const deactivatePerson = async (req: Request, res: Response): Promise<Res
     return res.status(500).json({ message: 'Internal server error', error });
   }
 };
+
+export const getPersonById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const person = await getPersonByIdService(Number(id));
+    if (!person) {
+      return res.status(404).json({ message: 'Person not found' });
+    }
+    res.status(200).json(person);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+export const getAddressById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const address = await getAddressByIdService(Number(id));
+    if (!address) {
+      return res.status(404).json({ message: 'Address not found' });
+    }
+    res.status(200).json(address);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+
+

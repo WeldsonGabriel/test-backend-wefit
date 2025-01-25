@@ -9,7 +9,10 @@ import {
   getAllPersonsService,
   deactivatePersonService,
   getPersonByIdService,
-  getAddressByIdService
+  getAddressByIdService,
+  updateCadastroService,
+  updateIndividualService,
+  updateCompanyService
 } from '../services/cadastro.service';
 
 export const createCadastro = async (req: Request, res: Response) => {
@@ -115,6 +118,36 @@ export const getAddressById = async (req: Request, res: Response) => {
     res.status(200).json(address);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+export const updateCadastro = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { name, email, phone, mobile, termsAccepted, type, address, cpf, cnpj, responsibleCpf } = req.body;
+
+    if (!name || !email || !termsAccepted || !type) {
+      return res.status(400).json({ message: 'Name, email, terms acceptance, and type are required' });
+    }
+
+    const updatedPerson = await updateCadastroService(Number(id), { name, email, phone, mobile, termsAccepted, type });
+
+    if (address) {
+      await createAddressService(updatedPerson.id, address);
+    }
+
+    if (type === 'INDIVIDUAL' && cpf) {
+      await updateIndividualService(updatedPerson.id, { cpf });
+    } else if (type === 'COMPANY' && cnpj && responsibleCpf) {
+      await updateCompanyService(updatedPerson.id, { cnpj, responsibleCpf });
+    } else {
+      return res.status(400).json({ message: 'Invalid data for the specified type' });
+    }
+
+    return res.status(200).json(updatedPerson);
+  } catch (error) {
+    console.error('Error in updateCadastro:', error);
+    return res.status(500).json({ message: 'Internal server error', error });
   }
 };
 

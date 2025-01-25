@@ -180,3 +180,54 @@ export const getPersonByIdService = async (id: number, isActive: boolean = true)
     throw new Error('Failed to fetch person');
   }
 };
+
+export const updateCadastroService = async (id: number, data: { name?: string, email?: string, phone?: string, mobile?: string, termsAccepted?: boolean, type?: string }) => {
+  try {
+    const cadastro = await prisma.person.update({
+      where: { id },
+      data
+    });
+    return cadastro;
+  } catch (error) {
+    console.error('Error in updateCadastroService:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaError = error as Prisma.PrismaClientKnownRequestError;
+      throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
+    }
+    throw new Error('Failed to update cadastro');
+  }
+};
+
+export const updateIndividualService = async (personId: number, data: { cpf?: string }) => {
+  try {
+    const individual = await prisma.individual.update({
+      where: { personId },
+      data
+    });
+    return individual;
+  } catch (error) {
+    console.error('Error in updateIndividualService:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaError = error as Prisma.PrismaClientKnownRequestError;
+      throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
+    }
+    throw new Error('Failed to update individual');
+  }
+};
+
+export const updateCompanyService = async (personId: number, data: { cnpj?: string, responsibleCpf?: string }) => {
+  try {
+    const company = await prisma.company.update({
+      where: { personId },
+      data
+    });
+    return company;
+  } catch (error) {
+    console.error('Error in updateCompanyService:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaError = error as Prisma.PrismaClientKnownRequestError;
+      throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
+    }
+    throw new Error('Failed to update company');
+  }
+};

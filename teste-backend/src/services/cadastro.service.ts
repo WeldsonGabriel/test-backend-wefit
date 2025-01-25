@@ -18,6 +18,16 @@ export const createPersonService = async (data: { name: string, email: string, c
 
 export const createIndividualService = async (personId: number, data: { cpf: string }) => {
   try {
+    const existingIndividual = await prisma.individual.findUnique({
+      where: {
+        cpf: data.cpf,
+      },
+    });
+
+    if (existingIndividual) {
+      throw new Error('CPF já cadastrado!');
+    }
+
     return await prisma.individual.create({
       data: {
         ...data,
@@ -27,6 +37,9 @@ export const createIndividualService = async (personId: number, data: { cpf: str
   } catch (error) {
     console.error('Error in createIndividualService:', error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2002') {
+        throw new Error('Este CPF já está cadastrado.');
+      }
       const prismaError = error as Prisma.PrismaClientKnownRequestError;
       throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
     }

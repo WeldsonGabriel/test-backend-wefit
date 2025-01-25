@@ -9,8 +9,8 @@ const app = express();
 app.use(express.json());
 app.use(validateRequest);
 
-// Rotas principais
-app.use("/api/cadastro", cadastroRoutes);
+// Adiciona as rotas de cadastro
+app.use(cadastroRoutes);
 
 // Middleware de tratamento de erros
 app.use(errorHandler);

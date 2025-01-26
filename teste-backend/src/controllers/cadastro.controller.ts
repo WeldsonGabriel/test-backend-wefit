@@ -18,7 +18,7 @@ import {
 
 export const createCadastro = async (req: Request, res: Response) => {
   try {
-    const { name, email, confirmEmail, phone, mobile, termsAccepted, type, address, cpf, cnpj, responsibleCpf } = req.body;
+    const { name, email, confirmEmail, phone, mobile, termsAccepted, type, addresses, cpf, cnpj, responsibleCpf } = req.body;
 
     if (!name || !email || !confirmEmail || !termsAccepted || !type) {
       return res.status(400).json({ message: 'Name, email, confirmEmail, terms acceptance, and type are required' });
@@ -30,8 +30,10 @@ export const createCadastro = async (req: Request, res: Response) => {
 
     const newPerson = await createPersonService({ name, email, confirmEmail, phone, mobile, termsAccepted, type }) as unknown as { id: number };
 
-    if (address) {
-      await createAddressService(newPerson.id, address);
+    if (addresses && addresses.length > 0) {
+      for (const address of addresses) {
+        await createAddressService(newPerson.id, address);
+      }
     }
 
     if (type === 'INDIVIDUAL' && cpf) {
@@ -117,7 +119,7 @@ export const getAddressById = async (req: Request, res: Response) => {
 export const updateCadastro = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, email, phone, mobile, termsAccepted, type, address, cpf, cnpj, responsibleCpf } = req.body;
+    const { name, email, phone, mobile, termsAccepted, type, addresses, cnpj, responsibleCpf } = req.body;
 
     if (!name || !email || !termsAccepted || !type) {
       return res.status(400).json({ message: 'Name, email, terms acceptance, and type are required' });
@@ -125,12 +127,14 @@ export const updateCadastro = async (req: Request, res: Response) => {
 
     const updatedPerson = await updateCadastroService(Number(id), { name, email, phone, mobile, termsAccepted, type });
 
-    if (address) {
-      await createAddressService(updatedPerson.id, address);
+    if (addresses && addresses.length > 0) {
+      for (const address of addresses) {
+        await createAddressService(updatedPerson.id, address);
+      }
     }
 
-    if (type === 'INDIVIDUAL' && cpf) {
-      await updateIndividualService(updatedPerson.id, { cpf });
+    if (type === 'INDIVIDUAL') {
+      await updateIndividualService(updatedPerson.id, {});
     } else if (type === 'COMPANY' && cnpj && responsibleCpf) {
       await updateCompanyService(updatedPerson.id, { cnpj, responsibleCpf });
     } else {

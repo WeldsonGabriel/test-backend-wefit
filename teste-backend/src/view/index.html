@@ -102,6 +102,19 @@
   <script>
     const API_URL = 'http://localhost:3000/api/cadastro'; // URL da API
 
+    async function checkServerStatus() {
+      try {
+        const response = await fetch(API_URL);
+        if (!response.ok) {
+          throw new Error('Server not reachable');
+        }
+      } catch (error) {
+        document.getElementById('error-message').innerText = 'Erro: Não foi possível acessar o servidor na porta 3000.';
+      }
+    }
+
+    checkServerStatus();
+
     document.querySelectorAll('input[name="tipoPessoa"]').forEach((input) => {
       input.addEventListener('change', function () {
         if (this.value === 'fisica') {
@@ -174,6 +187,51 @@
     applyMask(document.getElementById('cpf'), cpfMask);
     applyMask(document.getElementById('cnpj'), cnpjMask);
     applyMask(document.getElementById('responsibleCpf'), cpfMask);
+
+    // Convert input values to uppercase except for email fields
+    document.querySelectorAll('input[type="text"]').forEach((input) => {
+      if (input.id !== 'email' && input.id !== 'confirmarEmail') {
+        input.addEventListener('input', function () {
+          this.value = this.value.toUpperCase();
+        });
+      }
+    });
+
+    // Handle form submission
+    document.getElementById('form').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData.entries());
+
+      // Log the JSON being sent
+      console.log('Sending data:', JSON.stringify(data));
+
+      // Basic validation
+      if (!data.nome || !data.email || !data.confirmarEmail) {
+        document.getElementById('error-message').innerText = 'Por favor, preencha todos os campos obrigatórios.';
+        return;
+      }
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Erro ao enviar o formulário');
+        }
+
+        alert('Formulário enviado com sucesso!');
+      } catch (error) {
+        console.error('Erro ao enviar o formulário:', error);
+        document.getElementById('error-message').innerText = 'Erro ao enviar o formulário. Tente novamente mais tarde.';
+      }
+    });
   </script>
 </body>
 </html>

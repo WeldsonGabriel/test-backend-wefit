@@ -6,7 +6,7 @@ const PORT = 3000;
 
 // Enable CORS for a specific origin
 app.use(cors({
-  origin: 'http://127.0.0.1:5500' // Substitua pelo endereço do seu front-end
+  origin: 'http://127.0.0.1:5500/src/view/' // Substitua pelo endereço do seu front-end
 }));
 
 // Middleware to parse JSON bodies
@@ -54,5 +54,4 @@ app.post('/api/cadastro', (req, res) => {
 // ...existing code...
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+  console.log(`Server is running on http://localhost:${PORT}`);});

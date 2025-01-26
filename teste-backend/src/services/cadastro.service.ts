@@ -132,8 +132,20 @@ export const getAllPersonsService = async (isActive: boolean = true) => {
   }
 };
 
-export const deactivatePersonService = async (id: number) => {
-  return await deactivatePerson(id.toString());
+export const getInactivePersonsService = async () => {
+  try {
+    const persons = await prisma.person.findMany({
+      where: { isActive: false }
+    });
+    return persons;
+  } catch (error) {
+    console.error('Error in getInactivePersonsService:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaError = error as Prisma.PrismaClientKnownRequestError;
+      throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
+    }
+    throw new Error('Failed to fetch inactive persons');
+  }
 };
 
 export const getPersonByIdService = async (id: number, isActive: boolean = true) => {
@@ -149,6 +161,22 @@ export const getPersonByIdService = async (id: number, isActive: boolean = true)
       throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
     }
     throw new Error('Failed to fetch person');
+  }
+};
+
+export const getInactivePersonByIdService = async (id: number) => {
+  try {
+    const person = await prisma.person.findUnique({
+      where: { id, isActive: false }
+    });
+    return person;
+  } catch (error) {
+    console.error('Error in getInactivePersonByIdService:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaError = error as Prisma.PrismaClientKnownRequestError;
+      throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
+    }
+    throw new Error('Failed to fetch inactive person by ID');
   }
 };
 
@@ -201,4 +229,8 @@ export const updateCompanyService = async (personId: number, data: { cnpj?: stri
     }
     throw new Error('Failed to update company');
   }
+};
+
+export const deactivatePersonService = async (id: number) => {
+  return await deactivatePerson(id.toString());
 };

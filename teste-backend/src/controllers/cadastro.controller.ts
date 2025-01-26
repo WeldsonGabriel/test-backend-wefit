@@ -6,6 +6,8 @@ import {
   createCompanyService,
   getAllAddressesService,
   getAllPersonsService,
+  getInactivePersonsService,
+  getInactivePersonByIdService,
   deactivatePersonService,
   getPersonByIdService,
   getAddressByIdService,
@@ -64,18 +66,25 @@ export const getAllPersons = async (req: Request, res: Response): Promise<Respon
   }
 };
 
-export const deactivatePerson = async (req: Request, res: Response): Promise<Response> => {
+export const getInactivePersons = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { id } = req.params;
-    const person = await deactivatePersonService(Number(id));
-
-    if (!person) {
-      return res.status(404).json({ message: 'Person not found or already deactivated.' });
-    }
-
-    return res.status(200).json({ message: 'Person deactivated successfully.' });
+    const persons = await getInactivePersonsService();
+    return res.status(200).json(persons);
   } catch (error) {
     return res.status(500).json({ message: 'Internal server error', error });
+  }
+};
+
+export const getInactivePersonById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const person = await getInactivePersonByIdService(Number(id));
+    if (!person) {
+      return res.status(404).json({ message: 'Inactive person not found' });
+    }
+    res.status(200).json(person);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
   }
 };
 
@@ -135,5 +144,18 @@ export const updateCadastro = async (req: Request, res: Response) => {
   }
 };
 
+export const deactivatePerson = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const { id } = req.params;
+    const person = await deactivatePersonService(Number(id));
 
+    if (!person) {
+      return res.status(404).json({ message: 'Person not found or already deactivated.' });
+    }
+
+    return res.status(200).json({ message: 'Person deactivated successfully.' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error', error });
+  }
+};
 

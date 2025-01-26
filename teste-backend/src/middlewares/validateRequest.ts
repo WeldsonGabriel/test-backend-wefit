@@ -37,8 +37,8 @@ const cadastroSchema = Joi.object({
 });
 
 const validateCreateCadastro = (req: Request, res: Response, next: NextFunction) => {
-  if (req.method === 'GET', req.method === 'DELETE') {
-    return next(); // Skip validation for GET requests
+  if (req.method === 'GET' || req.method === 'DELETE') {
+    return next(); // Skip validation for GET and DELETE requests
   }
 
   const { error } = cadastroSchema.validate(req.body, { abortEarly: false });

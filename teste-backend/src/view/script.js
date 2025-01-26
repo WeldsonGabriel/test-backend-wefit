@@ -40,8 +40,39 @@ document.getElementById('form').addEventListener('submit', async function (event
     return;
   }
 
+  // Structure the JSON body based on the selected person type
+  const jsonBody = {
+    name: data.nome,
+    email: data.email,
+    confirmEmail: data.confirmarEmail,
+    phone: data.phone,
+    type: data.tipoPessoa === 'fisica' ? 'INDIVIDUAL' : 'COMPANY',
+    termsAccepted: data.termos === 'on',
+    addresses: [
+      {
+        street: data.street,
+        number: data.number,
+        complement: data.complement,
+        neighborhood: data.neighborhood,
+        city: data.city,
+        state: data.state,
+        postalCode: data.postalCode
+      }
+    ]
+  };
+
+  if (data.tipoPessoa === 'fisica') {
+    jsonBody.cpf = data.cpf;
+  } else if (data.tipoPessoa === 'juridica') {
+    jsonBody.cnpj = data.cnpj;
+    jsonBody.responsibleCpf = data.responsibleCpf;
+  }
+
+  // Log the JSON body being sent
+  console.log('Sending JSON body:', JSON.stringify(jsonBody));
+
   try {
-    const response = await axios.post(API_URL, data);
+    const response = await axios.post(API_URL, jsonBody);
     if (response.status === 200) {
       alert('Cadastro realizado com sucesso!');
       this.reset();

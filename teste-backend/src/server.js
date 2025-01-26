@@ -6,7 +6,7 @@ const PORT = 3000;
 
 // Enable CORS for a specific origin
 app.use(cors({
-  origin: 'http://localhost:5500/src/view/' // Substitua pelo endereço do seu front-end
+  origin: 'http://127.0.0.1:5500' // Substitua pelo endereço do seu front-end
 }));
 
 // Middleware to parse JSON bodies
@@ -27,8 +27,20 @@ app.post('/api/cadastro', (req, res) => {
     console.log('Received form data:', formData);
 
     // Validate the incoming data
-    if (!formData.nome || !formData.email || !formData.confirmarEmail) {
+    if (!formData.name || !formData.email || !formData.confirmEmail || !formData.termsAccepted || !formData.type) {
       return res.status(400).json({ message: 'Por favor, preencha todos os campos obrigatórios.' });
+    }
+
+    if (formData.email !== formData.confirmEmail) {
+      return res.status(400).json({ message: 'Email e confirmação de email não correspondem.' });
+    }
+
+    if (formData.type === 'INDIVIDUAL' && !formData.cpf) {
+      return res.status(400).json({ message: 'CPF é obrigatório para Pessoa Física.' });
+    }
+
+    if (formData.type === 'COMPANY' && (!formData.cnpj || !formData.responsibleCpf)) {
+      return res.status(400).json({ message: 'CNPJ e CPF do responsável são obrigatórios para Pessoa Jurídica.' });
     }
 
     // Process the form data here

@@ -13,7 +13,8 @@ import {
   getAddressByIdService,
   updateCadastroService,
   updateIndividualService,
-  updateCompanyService
+  updateCompanyService,
+  reactivatePersonService
 } from '../services/cadastro.service';
 
 export const createCadastro = async (req: Request, res: Response) => {
@@ -158,6 +159,21 @@ export const deactivatePerson = async (req: Request, res: Response): Promise<Res
     }
 
     return res.status(200).json({ message: 'Person deactivated successfully.' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error', error });
+  }
+};
+
+export const reactivatePerson = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const { id } = req.params;
+    const person = await reactivatePersonService(Number(id));
+
+    if (!person) {
+      return res.status(404).json({ message: 'Person not found or already active.' });
+    }
+
+    return res.status(200).json({ message: 'Person reactivated successfully.' });
   } catch (error) {
     return res.status(500).json({ message: 'Internal server error', error });
   }

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createCadastro, getAllAddresses, getAllPersons, getInactivePersons, getInactivePersonById, deactivatePerson, getPersonById, getAddressById, updateCadastro } from '../controllers/cadastro.controller';
+import { createCadastro, getAllAddresses, getAllPersons, getInactivePersons, getInactivePersonById, deactivatePerson, getPersonById, getAddressById, updateCadastro, reactivatePerson } from '../controllers/cadastro.controller';
 import validateRequest from "../middlewares/validateRequest"; // Middleware de validação
 
 const router = Router();
@@ -16,5 +16,7 @@ router.get("/persons/:id", getPersonById);
 router.put("/cadastro/update/:id", validateRequest, updateCadastro);
 
 router.delete("/persons/deactivate/:id", deactivatePerson);
+
+router.patch("/persons/reactivate/:id", reactivatePerson);
 
 export default router;

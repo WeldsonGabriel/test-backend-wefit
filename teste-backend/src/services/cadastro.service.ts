@@ -234,3 +234,20 @@ export const updateCompanyService = async (personId: number, data: { cnpj?: stri
 export const deactivatePersonService = async (id: number) => {
   return await deactivatePerson(id.toString());
 };
+
+export const reactivatePersonService = async (id: number) => {
+  try {
+    const person = await prisma.person.update({
+      where: { id, isActive: false },
+      data: { isActive: true }
+    });
+    return person;
+  } catch (error) {
+    console.error('Error in reactivatePersonService:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaError = error as Prisma.PrismaClientKnownRequestError;
+      throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
+    }
+    throw new Error('Failed to reactivate person');
+  }
+};

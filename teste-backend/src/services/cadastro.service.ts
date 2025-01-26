@@ -262,3 +262,32 @@ export const reactivatePersonService = async (id: number) => {
     throw new Error('Failed to reactivate person');
   }
 };
+
+export const deletePersonByIdService = async (id: number) => {
+  try {
+    // Delete related addresses
+    await prisma.address.deleteMany({
+      where: { personId: id }
+    });
+
+    // Delete related individual or company records
+    await prisma.individual.deleteMany({
+      where: { personId: id }
+    });
+    await prisma.company.deleteMany({
+      where: { personId: id }
+    });
+
+    // Delete the person
+    await prisma.person.delete({
+      where: { id }
+    });
+  } catch (error) {
+    console.error('Error in deletePersonByIdService:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaError = error as Prisma.PrismaClientKnownRequestError;
+      throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
+    }
+    throw error;
+  }
+};

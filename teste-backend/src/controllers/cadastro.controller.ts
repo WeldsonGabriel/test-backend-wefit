@@ -14,7 +14,8 @@ import {
   updateCadastroService,
   updateIndividualService,
   updateCompanyService,
-  reactivatePersonService
+  reactivatePersonService,
+  deletePersonByIdService // Import the new service
 } from '../services/cadastro.service';
 
 export const createCadastro = async (req: Request, res: Response) => {
@@ -174,6 +175,16 @@ export const reactivatePerson = async (req: Request, res: Response): Promise<Res
     }
 
     return res.status(200).json({ message: 'Person reactivated successfully.' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error', error });
+  }
+};
+
+export const deletePersonById = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const { id } = req.params;
+    await deletePersonByIdService(Number(id));
+    return res.status(200).json({ message: 'Person and related records deleted successfully.' });
   } catch (error) {
     return res.status(500).json({ message: 'Internal server error', error });
   }

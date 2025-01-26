@@ -1,5 +1,6 @@
 import prisma from '../models/cadastro.model';
 import { Prisma } from '@prisma/client';
+import { deactivatePerson } from '../repositories/cadastro.repository';
 
 export const createPersonService = async (data: { name: string, email: string, confirmEmail: string, phone?: string, mobile?: string, termsAccepted: boolean, type: string }) => {
   try {
@@ -115,23 +116,6 @@ export const getAddressByIdService = async (id: number, isActive: boolean = true
   }
 };
 
-export const deactivateAddressService = async (id: number) => {
-  try {
-    const address = await prisma.address.update({
-      where: { id },
-      data: { isActive: false },
-    });
-    return address;
-  } catch (error) {
-    console.error('Error in deactivateAddressService:', error);
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      const prismaError = error as Prisma.PrismaClientKnownRequestError;
-      throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
-    }
-    throw new Error('Failed to deactivate address');
-  }
-};
-
 export const getAllPersonsService = async (isActive: boolean = true) => {
   try {
     const persons = await prisma.person.findMany({
@@ -149,20 +133,7 @@ export const getAllPersonsService = async (isActive: boolean = true) => {
 };
 
 export const deactivatePersonService = async (id: number) => {
-  try {
-    const person = await prisma.person.update({
-      where: { id },
-      data: { isActive: false },
-    });
-    return person;
-  } catch (error) {
-    console.error('Error in deactivatePersonService:', error);
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      const prismaError = error as Prisma.PrismaClientKnownRequestError;
-      throw new Error(`Prisma error: ${prismaError.code} - ${prismaError.meta?.modelName}`);
-    }
-    throw new Error('Failed to deactivate person');
-  }
+  return await deactivatePerson(id.toString());
 };
 
 export const getPersonByIdService = async (id: number, isActive: boolean = true) => {

@@ -47,7 +47,7 @@ export const createCadastro = async (req: Request, res: Response) => {
 
     return res.status(201).json(newPerson);
   } catch (error) {
-    return res.status(500).json({ message: 'Internal server error', error });
+    return res.status(500).json({ message: 'Internal server error', error: (error as any).message });
   }
 };
 

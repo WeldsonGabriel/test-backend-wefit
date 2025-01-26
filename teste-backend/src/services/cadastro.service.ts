@@ -50,6 +50,17 @@ export const createIndividualService = async (personId: number, data: { cpf: str
 
 export const createCompanyService = async (personId: number, data: { cnpj: string, responsibleCpf: string }) => {
   try {
+    // Check if the responsible CPF is already registered
+    const responsiblePerson = await prisma.individual.findUnique({
+      where: {
+        cpf: data.responsibleCpf,
+      },
+    });
+
+    if (!responsiblePerson) {
+      throw new Error('CPF do responsável não está cadastrado no sistema.');
+    }
+
     return await prisma.company.create({
       data: {
         ...data,

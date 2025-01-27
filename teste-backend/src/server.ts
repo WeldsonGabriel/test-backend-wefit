@@ -5,10 +5,10 @@ dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 
-console.log(`Attempting to start server on port ${PORT}`); // Debug log
+console.log(`Tentando iniciar o servidor na porta ${PORT}`); // Log de debug
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
-  console.log(`API is accessible at http://localhost:${PORT}`);
+  console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`Ambiente: ${process.env.NODE_ENV || "desenvolvimento"}`);
+  console.log(`API acessível em http://localhost:${PORT}`);
 });
